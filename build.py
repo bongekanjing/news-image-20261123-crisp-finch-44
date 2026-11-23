@@ -82,50 +82,59 @@ def fit(d, text, path, max_size, width, floor=13):
 
 # ---------------------------------------------------------------- illustrations
 def scene_cop(d, box):
-    """A deal torn in two on a green table, stamped red: no agreement reached."""
+    """An empty summit: the horseshoe table, name plates, no delegates, a red NO DEAL across it."""
     x0, y0, x1, y1 = box
     w, h = x1 - x0, y1 - y0
-    cx, cy = x0 + w * 0.5, y0 + h * 0.5
-    # the felt table, lit from the top left
-    d.rectangle(box, fill=(24, 58, 48))
-    d.rectangle([x0, y0, x1, y0 + h * 0.30], fill=(30, 70, 58))
-    # two sheets, torn down the middle and pulled apart, big enough to read small
-    sw, sh = w * 0.30, h * 0.62
-    gap = w * 0.05
-    for side, dx in ((-1, -1), (1, 1)):
-        left = cx + dx * gap if dx > 0 else cx - gap - sw
-        top = cy - sh / 2
-        d.polygon([(left, top), (left + sw, top + h * 0.03),
-                   (left + sw, top + sh), (left, top + sh - h * 0.02)],
-                  fill=(246, 243, 232))
-        # ruled lines of the draft text, ragged on the torn edge
-        for i in range(6):
-            ly = top + sh * (0.16 + 0.13 * i)
-            if dx < 0:
-                d.line([(left + sw * 0.12, ly), (left + sw * 0.94, ly + 1)],
-                       fill=(150, 146, 132), width=2)
-            else:
-                d.line([(left + sw * 0.06, ly + 1), (left + sw * 0.88, ly)],
-                       fill=(150, 146, 132), width=2)
-    # the tear: a jagged dark seam between the halves
-    zig = []
-    steps = 7
-    for i in range(steps + 1):
-        t = i / steps
-        zig.append((cx + (-1 if i % 2 else 1) * w * 0.012, cy - sh / 2 + sh * t))
-    for i in range(steps):
-        d.line([zig[i], zig[i + 1]], fill=(18, 40, 34), width=5)
-    # the red stamp over the tear, big and plain so it reads at 300 px
-    r = w * 0.14
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(198, 40, 30), width=6)
-    d.line([(cx - r * 0.66, cy - r * 0.66), (cx + r * 0.66, cy + r * 0.66)],
-           fill=(198, 40, 30), width=8)
-    d.line([(cx + r * 0.66, cy - r * 0.66), (cx - r * 0.66, cy + r * 0.66)],
-           fill=(198, 40, 30), width=8)
-    # two unused microphones at the head of the table: nobody is speaking
-    for mx in (x0 + w * 0.14, x1 - w * 0.14):
-        d.line([(mx, y1 - h * 0.04), (mx, y1 - h * 0.26)], fill=(52, 58, 54), width=4)
-        d.ellipse([mx - 5, y1 - h * 0.32, mx + 5, y1 - h * 0.25], fill=(74, 80, 74))
+    # back wall and the hall's ceiling glow
+    for i in range(int(h * 0.42)):
+        t = i / max(1.0, h * 0.42)
+        d.line([(x0, y0 + i), (x1, y0 + i)],
+               fill=(int(44 + 26 * t), int(60 + 26 * t), int(66 + 24 * t)))
+    # a deep green table in perspective: a wide horseshoe seen from the head
+    tbl = y0 + h * 0.46
+    d.polygon([(x0 + w * 0.04, tbl), (x1 - w * 0.04, tbl),
+               (x1 - w * 0.12, y1 - h * 0.04), (x0 + w * 0.12, y1 - h * 0.04)],
+              fill=(22, 74, 58))
+    d.polygon([(x0 + w * 0.04, tbl), (x1 - w * 0.04, tbl),
+               (x1 - w * 0.05, tbl + h * 0.05), (x0 + w * 0.05, tbl + h * 0.05)],
+              fill=(30, 92, 72))
+    # empty chairs down both sides, seen from behind
+    for k in range(6):
+        t = (k + 0.5) / 6
+        for side in (0, 1):
+            cxx = (x0 + w * 0.10 + (w * 0.80) * t) if side == 0 else (x0 + w * 0.12 + (w * 0.76) * t)
+            cyy = tbl - h * 0.10 + (h * 0.10) * t if side == 0 else tbl + h * 0.10 + (h * 0.03) * t
+            cw_, ch_ = w * 0.055, h * 0.16
+            d.rectangle([cxx - cw_ / 2, cyy - ch_ / 2, cxx + cw_ / 2, cyy + ch_ / 2],
+                        fill=(38, 44, 46))
+            d.rectangle([cxx - cw_ / 2, cyy - ch_ / 2, cxx + cw_ / 2, cyy - ch_ / 2 + 4],
+                        fill=(56, 62, 64))
+    # name plates: small white slabs along the table edge, all facing nobody
+    for k in range(7):
+        px = x0 + w * 0.18 + (w * 0.64) * k / 6
+        py = tbl + h * 0.055
+        d.rectangle([px - w * 0.032, py, px + w * 0.032, py + h * 0.035], fill=(238, 234, 222))
+        d.rectangle([px - w * 0.026, py + h * 0.010, px + w * 0.026, py + h * 0.017],
+                    fill=(120, 116, 104))
+    # microphones, switched off, pointing at empty seats
+    for k in (1, 3, 5):
+        px = x0 + w * 0.18 + (w * 0.64) * k / 6
+        py = tbl + h * 0.012
+        d.line([(px, py), (px, py - h * 0.10)], fill=(64, 70, 70), width=3)
+        d.ellipse([px - 4, py - h * 0.115, px + 4, py - h * 0.09], fill=(96, 102, 100))
+    # the red verdict, laid flat across the empty table, reading at any size
+    d.rectangle([x0 + w * 0.20, tbl + h * 0.16, x1 - w * 0.20, tbl + h * 0.34],
+                outline=(196, 38, 28), width=4)
+    s_ = fit(d, "NO DEAL", SANS_B, int(h * 0.15), w * 0.56)
+    ink(d, ((x0 + x1) / 2, tbl + h * 0.25), "NO DEAL", SANS_B, s_, (196, 38, 28), "mm")
+    # the torn draft, half off the table edge at the left
+    d.polygon([(x0 + w * 0.06, y1 - h * 0.20), (x0 + w * 0.18, y1 - h * 0.26),
+               (x0 + w * 0.20, y1 - h * 0.10), (x0 + w * 0.08, y1 - h * 0.06)],
+              fill=(240, 236, 224))
+    for k in range(3):
+        d.line([(x0 + w * 0.09, y1 - h * 0.19 + k * h * 0.03),
+                (x0 + w * 0.17, y1 - h * 0.22 + k * h * 0.03)],
+               fill=(150, 146, 132), width=2)
 
 
 def scene_drones(d, box):
@@ -190,62 +199,139 @@ def scene_bahrain(d, box):
 
 
 def scene_ships(d, box):
-    """Benghazi harbour at dawn: a warship on its side, smoke, a sea drone."""
+    """Benghazi harbour at dawn: a corvette listing hard, a cargo ship burning, a drone in the air."""
     x0, y0, x1, y1 = box
-    h = y1 - y0
-    for i in range(int(h * 0.55)):
-        t = i / max(1, h * 0.55)
+    w, h = x1 - x0, y1 - y0
+    for i in range(int(h * 0.58)):
+        t = i / max(1, h * 0.58)
         d.line([(x0, y0 + i), (x1, y0 + i)],
-               fill=(int(34 + 62 * t), int(40 + 54 * t), int(58 + 44 * t)))
-    sea = y0 + h * 0.55
-    d.rectangle([x0, sea, x1, y1], fill=(16, 46, 60))
-    for i in range(int(sea), int(y1), 9):
-        d.line([(x0, i), (x1, i)], fill=(20 + (i % 9), 56 + (i % 7), 72))
-    # the capsized corvette: hull rolled onto its side, superstructure in the water
-    hx0, hx1 = x0 + 34, x1 - 42
-    d.polygon([(hx0, sea - 6), (hx1, sea - 4), (hx1 - 22, sea + 30), (hx0 + 16, sea + 26)],
-              fill=(74, 78, 82))
-    d.polygon([(hx0, sea - 6), (hx1, sea - 4), (hx1 - 6, sea - 16), (hx0 + 4, sea - 18)],
-              fill=(104, 108, 112))
-    for bx in range(int(hx0) + 18, int(hx1) - 26, 30):
-        d.rectangle([bx, sea - 14, bx + 14, sea - 8], fill=(52, 56, 60))
-    d.rectangle([hx1 - 30, sea - 44, hx1 - 12, sea - 12], fill=(88, 92, 96))
-    d.line([(hx1 - 21, sea - 44), (hx1 - 21, sea - 62)], fill=(150, 152, 156), width=3)
-    # smoke off the hull, drifting right
-    for i, sy in enumerate(range(int(sea) - 52, int(sea) - 4, 10)):
-        d.ellipse([hx1 - 40 + i * 7, sy, hx1 + 22 + i * 7, sy + 18], fill=(58, 52, 50))
-    # the sea drone: low, dark, leaving a wake, under a bright horizon
-    dx, dy = x0 + 46, y0 + h * 0.24
-    d.polygon([(dx - 18, dy + 6), (dx, dy - 6), (dx + 20, dy + 4), (dx, dy + 10)],
-              fill=(30, 32, 34))
-    d.line([(dx - 20, dy + 9), (dx - 56, dy + 14)], fill=(196, 214, 218), width=2)
-    d.line([(dx + 20, dy + 7), (dx + 54, dy + 12)], fill=(196, 214, 218), width=2)
+               fill=(int(28 + 70 * t), int(34 + 62 * t), int(54 + 50 * t)))
+    sea = y0 + h * 0.58
+    d.rectangle([x0, sea, x1, y1], fill=(14, 44, 58))
+    for i in range(int(sea), int(y1), 8):
+        c = (18 + (i % 11), 52 + (i % 9), 68 + (i % 7))
+        d.line([(x0, i), (x1, i)], fill=c)
+    d.line([(x0, sea), (x1, sea)], fill=(232, 206, 158), width=2)
+
+    # the corvette: listing 25 degrees to port, waterline up its flank
+    cx, cy = x0 + w * 0.30, sea + h * 0.10
+    bw = w * 0.34
+    d.polygon([(cx - bw * 0.5, cy - h * 0.02), (cx + bw * 0.5, cy - h * 0.10),
+               (cx + bw * 0.44, cy + h * 0.10), (cx - bw * 0.56, cy + h * 0.14)],
+              fill=(70, 74, 78))
+    d.polygon([(cx - bw * 0.5, cy - h * 0.02), (cx + bw * 0.5, cy - h * 0.10),
+               (cx + bw * 0.46, cy - h * 0.16), (cx - bw * 0.48, cy - h * 0.09)],
+              fill=(112, 116, 120))
+    # mast, tilted with the hull
+    d.line([(cx + bw * 0.10, cy - h * 0.14), (cx + bw * 0.20, cy - h * 0.46)],
+           fill=(150, 152, 156), width=3)
+    d.line([(cx + bw * 0.20, cy - h * 0.40), (cx + bw * 0.34, cy - h * 0.44)],
+           fill=(150, 152, 156), width=2)
+    # a red list mark on the flank, so the tilt is read as damage
+    d.line([(cx - bw * 0.30, cy + h * 0.02), (cx + bw * 0.16, cy - h * 0.05)],
+           fill=(176, 40, 30), width=3)
+
+    # the cargo ship, further out, burning from the deck
+    gx, gy = x0 + w * 0.70, sea - h * 0.02
+    gw = w * 0.36
+    d.polygon([(gx - gw * 0.5, gy), (gx + gw * 0.5, gy),
+               (gx + gw * 0.42, gy + h * 0.13), (gx - gw * 0.44, gy + h * 0.13)],
+              fill=(58, 60, 64))
+    for bx in range(int(gx - gw * 0.38), int(gx + gw * 0.34), 26):
+        d.rectangle([bx, gy - h * 0.10, bx + 18, gy - h * 0.005], fill=(84, 74, 66))
+    # fire and smoke off her
+    for k, sy in enumerate(range(int(gy) - 14, int(y0) + 4, -11)):
+        d.ellipse([gx - 16 + k * 5, sy - 12, gx + 44 + k * 5, sy + 12],
+                  fill=(int(80 - k * 5), int(66 - k * 4), int(62 - k * 4)))
+    d.polygon([(gx - 18, gy - h * 0.02), (gx - 4, gy - h * 0.30), (gx + 10, gy - h * 0.10),
+               (gx + 24, gy - h * 0.24), (gx + 34, gy - h * 0.01)], fill=(214, 92, 28))
+    d.polygon([(gx - 6, gy - h * 0.03), (gx + 4, gy - h * 0.18), (gx + 16, gy - h * 0.02)],
+              fill=(250, 198, 84))
+
+    # the sea drone that did it, low and dark, wake behind, in the near water
+    dx, dy = x0 + w * 0.42, y1 - h * 0.10
+    d.polygon([(dx - 20, dy + 5), (dx, dy - 7), (dx + 22, dy + 3), (dx, dy + 9)],
+              fill=(24, 26, 28))
+    d.line([(dx - 22, dy + 8), (dx - 62, dy + 13)], fill=(198, 216, 220), width=2)
+    d.line([(dx + 22, dy + 6), (dx + 58, dy + 11)], fill=(198, 216, 220), width=2)
+    # two small hulls in the water at the left edge, to say the harbour is full of traffic
+    d.polygon([(x0 + 8, y1 - h * 0.24), (x0 + 30, y1 - h * 0.26),
+               (x0 + 27, y1 - h * 0.20), (x0 + 10, y1 - h * 0.19)], fill=(40, 52, 58))
 
 
 def scene_fire(d, box):
-    """A gutted factory at night: roof gone, fire inside, smoke above."""
+    """A gutted plant at night, the roof torn open, crews at the cordon counting the dead."""
     x0, y0, x1, y1 = box
-    h = y1 - y0
-    d.rectangle(box, fill=(20, 18, 22))
-    for i in range(int(h)):
-        t = i / max(1, h)
+    w, h = x1 - x0, y1 - y0
+    # sky: smoke lit from below
+    for i in range(int(h * 0.70)):
+        t = i / max(1, h * 0.70)
         d.line([(x0, y0 + i), (x1, y0 + i)],
-               fill=(int(96 - 52 * t), int(44 - 20 * t), int(38 - 16 * t)))
-    bx0, bx1 = x0 + 10, x1 - 10
-    top = y0 + h * 0.42
-    d.rectangle([bx0, top, bx1, y1], fill=(22, 18, 18))
-    for wx in range(int(bx0) + 10, int(bx1) - 16, 30):
-        d.rectangle([wx, top + 18, wx + 18, y1 - 16], fill=(228, 128, 34))
-        d.rectangle([wx, top + 18, wx + 18, top + 30], fill=(38, 30, 28))
-    d.polygon([(bx0, top), (bx0 + 26, top - 16), (bx1 - 30, top - 14), (bx1, top + 2)])
-    d.line([(bx0, top), (bx1, top)], fill=(16, 12, 12), width=4)
-    cx = (bx0 + bx1) / 2
-    d.polygon([(cx - 34, top + 6), (cx - 8, top - 62), (cx + 6, top - 20),
-               (cx + 26, top - 78), (cx + 40, top + 4)], fill=(220, 82, 24))
-    d.polygon([(cx - 16, top + 4), (cx + 2, top - 40), (cx + 22, top + 2)],
-              fill=(250, 206, 92))
-    for i, sy in enumerate(range(int(y0) + 2, int(top) - 30, 12)):
-        d.ellipse([cx - 30 + i * 6, sy, cx + 34 + i * 6, sy + 20], fill=(52, 44, 44))
+               fill=(int(96 - 54 * t), int(52 - 30 * t), int(44 - 22 * t)))
+    # the shed: roofline at 0.34h, floor at 0.70h, so the ground band is clear for people
+    ry, fy = y0 + h * 0.34, y0 + h * 0.70
+    d.rectangle([x0 + 4, ry, x1 - 4, fy], fill=(24, 19, 19))
+    # sawtooth roof, one bay collapsed
+    span = (x1 - 4) - (x0 + 4)
+    for k in range(7):
+        bx = x0 + 4 + span * k / 7
+        bw_ = span / 7
+        if k == 4:
+            d.polygon([(bx, ry), (bx + bw_ * 0.5, ry + 16), (bx + bw_, ry + 6)],
+                      fill=(14, 11, 11))
+            continue
+        d.polygon([(bx, ry), (bx + bw_ * 0.55, ry - 15), (bx + bw_, ry)],
+                  fill=(34, 27, 25))
+    # window bays: a hot core behind the middle ones, dimmer at the edges
+    for wx in range(int(x0) + 14, int(x1) - 20, 30):
+        t = abs(wx - (x0 + w * 0.5)) / w
+        hot = max(0.0, 1.0 - t * 1.7)
+        col = (int(120 + 120 * hot), int(44 + 90 * hot), int(16 + 30 * hot))
+        d.rectangle([wx, ry + 16, wx + 19, fy - 10], fill=col)
+    # the fire, off-centre and breaking upward through the collapsed bay
+    cx = x0 + w * 0.56
+    d.polygon([(cx - 34, ry + 10), (cx - 12, ry - 74), (cx + 4, ry - 26),
+               (cx + 26, ry - 96), (cx + 40, ry + 6)], fill=(212, 78, 22))
+    d.polygon([(cx - 14, ry + 8), (cx, ry - 46), (cx + 18, ry + 6)], fill=(252, 208, 96))
+    d.polygon([(cx - 4, ry + 6), (cx + 6, ry - 22), (cx + 14, ry + 6)], fill=(255, 246, 214))
+    for k, sy in enumerate(range(int(y0) - 2, int(ry) - 40, 11)):
+        d.ellipse([cx - 30 + k * 7, sy, cx + 46 + k * 7, sy + 18],
+                  fill=(int(58 - k * 3), int(48 - k * 2), int(46 - k * 2)))
+
+    # ground: wet apron, lit orange near the fire, dark at the edges
+    gy = fy
+    for i in range(int(gy), int(y1)):
+        t = (i - gy) / max(1.0, y1 - gy)
+        d.line([(x0, i), (x1, i)],
+               fill=(int(46 - 26 * t), int(30 - 18 * t), int(26 - 15 * t)))
+
+    def person(px, ph, arm_up=False, helmet=False):
+        """A silhouette at the cordon, sized so it reads as human at 300 px."""
+        d.ellipse([px - ph * 0.10, gy - ph, px + ph * 0.10, gy - ph * 0.80], fill=(12, 10, 10))
+        d.polygon([(px - ph * 0.13, gy - ph * 0.82), (px + ph * 0.13, gy - ph * 0.82),
+                   (px + ph * 0.10, gy), (px - ph * 0.10, gy)], fill=(12, 10, 10))
+        if helmet:
+            d.rectangle([px - ph * 0.15, gy - ph * 0.84, px + ph * 0.15, gy - ph * 0.74],
+                        fill=(206, 180, 88))
+            d.rectangle([px - ph * 0.11, gy - ph * 0.44, px + ph * 0.11, gy - ph * 0.37],
+                        fill=(222, 208, 152))
+        if arm_up:
+            d.line([(px + ph * 0.10, gy - ph * 0.72), (px + ph * 0.20, gy - ph * 1.02)],
+                   fill=(12, 10, 10), width=max(2, int(ph * 0.07)))
+
+    # two helmeted crews with a hose, left of the fire, silhouetted on the glow
+    person(x0 + w * 0.14, h * 0.30, helmet=True)
+    person(x0 + w * 0.22, h * 0.26, helmet=True)
+    d.line([(x0 + w * 0.22, gy - h * 0.17), (x0 + w * 0.46, gy - h * 0.02)],
+           fill=(232, 220, 190), width=2)
+    # a covered stretcher and its two bearers, right of the fire
+    sx = x0 + w * 0.78
+    d.rectangle([sx - 22, gy - h * 0.09, sx + 24, gy - h * 0.05], fill=(196, 192, 186))
+    for ox in (-26, 28):
+        person(sx + ox, h * 0.24)
+    # the engine's blue light, at the right edge
+    d.ellipse([x1 - w * 0.09, gy - h * 0.20, x1 - w * 0.02, gy - h * 0.13],
+              fill=(60, 116, 200))
 
 
 def main():
@@ -261,30 +347,31 @@ def main():
     # ---------------------------------------------------------- date, enormous
     y = 44
     date = "23 NOVEMBER 2026"
-    size = fit(d, date, SERIF_B, 96, W - 2 * M)
+    size = fit(d, date, SERIF_B, 74, W - 2 * M)
     ink(d, (W / 2, y), date, SERIF_B, size, INK, "ma")
     y += size + 6
     d.rectangle([M, y, W - M, y + 3], fill=RED)
     y += 11
 
-    deck = ("COP31 fails in Antalya  ·  Ukraine sinks Russian ships off Libya  ·  "
-            "24 dead in a Java factory  ·  Democrats take 258 House seats")
-    para(d, (W / 2, y), deck, SANS_B, 15, W - 2 * M, 19, RED, limit=2, anchor="ma")
-    y += 40
+    deck = ("COP31 fails  ·  two Russian ships sunk  ·  24 dead in Java  ·  Democrats take the House")
+    para(d, (W / 2, y), deck, SANS_B, 20, W - 2 * M, 24, INK, limit=1, anchor="ma")
+    y += 34
 
     # ---------------------------------------------------------- five figures
-    figs = [("NO DEAL", "COP31"), ("2 SHIPS", "sunk off Libya"), ("24", "dead, Java"),
-            ("258", "House seats"), ("€1.4BN", "India to Nepal")]
+    # Five facts the picture row below does not repeat: breadth, not echo.
+    figs = [("1,089", "FLIGHTS GROUNDED"), ("\u20ac1.4BN", "INDIA TO NEPAL"),
+            ("128", "STATES, KILLER ROBOTS"), ("10 MONTHS", "LOW FOR KOSPI"),
+            ("4", "KILLED IN KYIV")]
     fw = (W - 2 * M) / len(figs)
-    d.rectangle([M, y, W - M, y + 74], fill=(238, 233, 221))
+    d.rectangle([M, y, W - M, y + 78], fill=(238, 233, 221))
     for i, (num, cap) in enumerate(figs):
         cx = M + fw * i + fw / 2
-        s = fit(d, num, SERIF_B, 40, fw - 18)
-        ink(d, (cx, y + 9), num, SERIF_B, s, RED, "ma")
-        ink(d, (cx, y + 54), cap.upper(), SANS_B, 11, DIM, "ma")
+        s_ = fit(d, num, SERIF_B, 40, fw - 16)
+        ink(d, (cx, y + 8), num, SERIF_B, s_, RED, "ma")
+        ink(d, (cx, y + 56), cap, SANS_B, 12, DIM, "ma")
         if i:
-            d.line([(M + fw * i, y + 10), (M + fw * i, y + 64)], fill=(206, 198, 184))
-    y += 84
+            d.line([(M + fw * i, y + 10), (M + fw * i, y + 68)], fill=(206, 198, 184))
+    y += 88
 
     # ---------------------------------------------------------- three leads
     leads = [
@@ -330,8 +417,8 @@ def main():
     briefs = [
         ("UNITED STATES", "Democrats win 258 House seats",
          "Their biggest majority since 1992, with 44 seats gained"),
-        ("UKRAINE", "Four killed in drone strikes on Kyiv region",
-         "A block in Dymer is hit; a woman is pulled out after 22 hours"),
+        ("UKRAINE", "Woman pulled from the rubble after 24 hours",
+         "Four killed in the drone strikes on the Kyiv region; a Dymer block fell"),
         ("INDONESIA", "Rescuers hunt 34 missing in the factory fire",
          "24 bodies recovered from the Cikande confectionery plant"),
         ("INDIA \\u00b7 NEPAL", "Modi pledges \u20ac1.4bn after the glacier flood",
@@ -383,7 +470,7 @@ def main():
         SANS_B, 10, GREY)
     ink(d, (W - M, fy + 8), "CLAIMS AS CLAIMS  \u00b7  TOLLS AS REPORTED", SANS_B, 9, GREY, "ra")
 
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry", "entry.png")
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry2", "entry.png")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.save(out, optimize=True)
     print("wrote", out, img.size, os.path.getsize(out), "bytes")

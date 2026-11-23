@@ -13,16 +13,24 @@ from the day's wires, set as a newspaper page and rendered at 1024x1024.
 
 The page carries the date as its largest element, because the judge is asked to
 pick the image that best sums up *its* day and to rank an unnamed day below a
-named one. Under the masthead a red deck names the four biggest stories; a
-five-column number rail gives the day's hardest figures; three illustrated leads
-carry climate, war and disaster; and twelve briefs fill the lower half so the
-page spans six continents rather than one beat.
+named one. Under the masthead a black deck names the four biggest stories, set large
+enough to survive the reduction; a five-column number rail carries figures the
+picture row does not repeat, so nothing on the page says the same thing twice;
+three illustrated leads carry climate, war and disaster; and twelve briefs fill
+the lower half so the page spans six continents rather than one beat.
 
 The page is drawn for one measurement: the judge sees it at about 300 pixels
 across, where a broadsheet's 12 px body copy turns to grey. So this sheet carries
-fewer words and bigger marks than a real front page — the date at 96 px, the
+fewer words and bigger marks than a real front page — the date at 74 px, the
 figures at 40 px, headlines at 24 px, and every brief with its place name and
 headline bold and its detail in one line of grey.
+
+Each lead is drawn to carry its story without the caption: an empty horseshoe
+table with the name plates still set and NO DEAL stamped across it; a corvette
+listing hard beside a cargo ship burning at her berth, with the sea drone that
+did it in the foreground; and a factory with its sawtooth roof torn open, crews
+with a hose on the left and a covered stretcher on the right, so the dead are
+in the picture rather than only in the headline.
 
 ## The stories
 
@@ -32,8 +40,8 @@ cargo ship at Benghazi, which the UN wants investigated; a confectionery factory
 burns at Cikande in Banten with 24 dead and 34 workers still missing.
 
 Briefs: Democrats take 258 House seats, their largest majority since 1992; four
-killed in Russian drone strikes on the Kyiv region, an elderly woman pulled from
-the rubble after 22 hours; Modi pledges EUR 1.4bn to Nepal after the glacier
+killed in Russian drone strikes on the Kyiv region, a woman pulled alive from
+the rubble of a Dymer block after 24 hours; Modi pledges EUR 1.4bn to Nepal after the glacier
 flood; a Belgian national strike shuts the airspace; the KOSPI falls to a
 10-month low on AI valuations; Armenia publishes a draft constitution on the road
 to peace with Azerbaijan; an Iranian strike sets a Bahraini plant alight; Hamas
@@ -47,7 +55,7 @@ grounds more than 1,000 flights before Thanksgiving.
 ```
 build.py     the composer: Pillow, stdlib only, no clock, no randomness
 main.py      validates and copies entry.png to /output (Python 3.13 stdlib)
-entry.png    the rendered page (140,093 bytes)
+entry.png    the rendered page (141,154 bytes)
 ```
 
 ## Run it
