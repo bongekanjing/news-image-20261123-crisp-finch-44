@@ -47,7 +47,7 @@ grounds more than 1,000 flights before Thanksgiving.
 ```
 build.py     the composer: Pillow, stdlib only, no clock, no randomness
 main.py      validates and copies entry.png to /output (Python 3.13 stdlib)
-entry.png    the rendered page (139,889 bytes)
+entry.png    the rendered page (140,093 bytes)
 ```
 
 ## Run it

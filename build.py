@@ -82,45 +82,50 @@ def fit(d, text, path, max_size, width, floor=13):
 
 # ---------------------------------------------------------------- illustrations
 def scene_cop(d, box):
-    """A summit that failed: a horseshoe table, most chairs empty, a torn text."""
+    """A deal torn in two on a green table, stamped red: no agreement reached."""
     x0, y0, x1, y1 = box
-    h = y1 - y0
-    d.rectangle(box, fill=(30, 46, 56))
-    # carpet
-    d.rectangle([x0, y0 + h * 0.30, x1, y1], fill=(38, 58, 62))
-    # the table: a horseshoe, seen from above, pale wood on the dark floor
-    cx, cy = (x0 + x1) / 2, y0 + h * 0.62
-    tw, th = (x1 - x0) * 0.62, h * 0.34
-    d.ellipse([cx - tw, cy - th, cx + tw, cy + th], fill=(150, 122, 82))
-    d.ellipse([cx - tw + 26, cy - th + 20, cx + tw - 26, cy + th - 20], fill=(38, 58, 62))
-    d.rectangle([cx - tw + 20, cy + th - 26, cx + tw - 20, cy + th + 6], fill=(38, 58, 62))
-    # seats round the outside: half of them empty, one tipped over
-    for i in range(11):
-        a = 3.14159 * (0.06 + 0.88 * i / 10.0)
-        import math
-        sx = cx - math.cos(a) * (tw + 30)
-        sy = cy + math.sin(a) * (th + 30)
-        if i in (2, 4, 5, 7, 9):
-            continue
-        d.ellipse([sx - 9, sy - 9, sx + 9, sy + 9], fill=(150, 156, 160))
-        d.ellipse([sx - 5, sy - 5, sx + 5, sy + 5], fill=(88, 94, 100))
-    # the document on the table, torn down the middle and pulled apart
-    dx, dy = cx, cy
-    d.polygon([(dx - 54, dy - 16), (dx - 6, dy - 20), (dx - 10, dy + 18), (dx - 58, dy + 14)],
-              fill=(244, 240, 228))
-    d.polygon([(dx + 12, dy - 19), (dx + 58, dy - 14), (dx + 54, dy + 16), (dx + 8, dy + 18)],
-              fill=(244, 240, 228))
-    for ry in range(int(dy) - 10, int(dy) + 14, 7):
-        d.line([(dx - 48, ry), (dx - 16, ry + 1)], fill=(148, 142, 128), width=1)
-        d.line([(dx + 20, ry), (dx + 50, ry - 1)], fill=(148, 142, 128), width=1)
-    # microphones on the table, unlit
-    for mx in (cx - tw * 0.55, cx, cx + tw * 0.55):
-        d.line([(mx, cy + th - 30), (mx, cy + th - 52)], fill=(58, 62, 66), width=3)
-        d.ellipse([mx - 5, cy + th - 60, mx + 5, cy + th - 50], fill=(70, 74, 78))
-    # the empty stage behind, with a screen that shows nothing agreed
-    d.rectangle([x0 + 12, y0 + 4, x1 - 12, y0 + h * 0.26], fill=(22, 34, 42))
-    d.rectangle([x0 + 30, y0 + 10, x1 - 30, y0 + h * 0.22], fill=(228, 224, 210))
-    d.line([(x0 + 40, y0 + h * 0.15), (x1 - 40, y0 + h * 0.15)], fill=(176, 34, 28), width=6)
+    w, h = x1 - x0, y1 - y0
+    cx, cy = x0 + w * 0.5, y0 + h * 0.5
+    # the felt table, lit from the top left
+    d.rectangle(box, fill=(24, 58, 48))
+    d.rectangle([x0, y0, x1, y0 + h * 0.30], fill=(30, 70, 58))
+    # two sheets, torn down the middle and pulled apart, big enough to read small
+    sw, sh = w * 0.30, h * 0.62
+    gap = w * 0.05
+    for side, dx in ((-1, -1), (1, 1)):
+        left = cx + dx * gap if dx > 0 else cx - gap - sw
+        top = cy - sh / 2
+        d.polygon([(left, top), (left + sw, top + h * 0.03),
+                   (left + sw, top + sh), (left, top + sh - h * 0.02)],
+                  fill=(246, 243, 232))
+        # ruled lines of the draft text, ragged on the torn edge
+        for i in range(6):
+            ly = top + sh * (0.16 + 0.13 * i)
+            if dx < 0:
+                d.line([(left + sw * 0.12, ly), (left + sw * 0.94, ly + 1)],
+                       fill=(150, 146, 132), width=2)
+            else:
+                d.line([(left + sw * 0.06, ly + 1), (left + sw * 0.88, ly)],
+                       fill=(150, 146, 132), width=2)
+    # the tear: a jagged dark seam between the halves
+    zig = []
+    steps = 7
+    for i in range(steps + 1):
+        t = i / steps
+        zig.append((cx + (-1 if i % 2 else 1) * w * 0.012, cy - sh / 2 + sh * t))
+    for i in range(steps):
+        d.line([zig[i], zig[i + 1]], fill=(18, 40, 34), width=5)
+    # the red stamp over the tear, big and plain so it reads at 300 px
+    r = w * 0.14
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(198, 40, 30), width=6)
+    d.line([(cx - r * 0.66, cy - r * 0.66), (cx + r * 0.66, cy + r * 0.66)],
+           fill=(198, 40, 30), width=8)
+    d.line([(cx + r * 0.66, cy - r * 0.66), (cx - r * 0.66, cy + r * 0.66)],
+           fill=(198, 40, 30), width=8)
+    # two unused microphones at the head of the table: nobody is speaking
+    for mx in (x0 + w * 0.14, x1 - w * 0.14):
+        d.line([(mx, y1 - h * 0.04), (mx, y1 - h * 0.26)], fill=(52, 58, 54), width=4)
+        d.ellipse([mx - 5, y1 - h * 0.32, mx + 5, y1 - h * 0.25], fill=(74, 80, 74))
 
 
 def scene_drones(d, box):
