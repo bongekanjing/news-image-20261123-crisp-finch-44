@@ -82,120 +82,73 @@ def fit(d, text, path, max_size, width, floor=13):
 
 # ---------------------------------------------------------------- illustrations
 def scene_cop(d, box):
-    """An empty summit: the horseshoe table, name plates, no delegates, a red NO DEAL across it."""
+    """An empty summit hall in flat daylight: the table set, no delegates, NO DEAL on it.
+
+    Deliberately the brightest of the three leads, so the picture row is not three dark
+    rectangles: the failure here is an absence in full light, not a night scene.
+    """
     x0, y0, x1, y1 = box
     w, h = x1 - x0, y1 - y0
-    # back wall and the hall's ceiling glow
-    for i in range(int(h * 0.42)):
-        t = i / max(1.0, h * 0.42)
+    # pale hall, blinds and a high window band
+    for i in range(int(h * 0.46)):
+        t = i / max(1.0, h * 0.46)
         d.line([(x0, y0 + i), (x1, y0 + i)],
-               fill=(int(44 + 26 * t), int(60 + 26 * t), int(66 + 24 * t)))
-    # a deep green table in perspective: a wide horseshoe seen from the head
-    tbl = y0 + h * 0.46
-    d.polygon([(x0 + w * 0.04, tbl), (x1 - w * 0.04, tbl),
-               (x1 - w * 0.12, y1 - h * 0.04), (x0 + w * 0.12, y1 - h * 0.04)],
-              fill=(22, 74, 58))
-    d.polygon([(x0 + w * 0.04, tbl), (x1 - w * 0.04, tbl),
-               (x1 - w * 0.05, tbl + h * 0.05), (x0 + w * 0.05, tbl + h * 0.05)],
-              fill=(30, 92, 72))
-    # empty chairs down both sides, seen from behind
-    for k in range(6):
-        t = (k + 0.5) / 6
-        for side in (0, 1):
-            cxx = (x0 + w * 0.10 + (w * 0.80) * t) if side == 0 else (x0 + w * 0.12 + (w * 0.76) * t)
-            cyy = tbl - h * 0.10 + (h * 0.10) * t if side == 0 else tbl + h * 0.10 + (h * 0.03) * t
-            cw_, ch_ = w * 0.055, h * 0.16
-            d.rectangle([cxx - cw_ / 2, cyy - ch_ / 2, cxx + cw_ / 2, cyy + ch_ / 2],
-                        fill=(38, 44, 46))
-            d.rectangle([cxx - cw_ / 2, cyy - ch_ / 2, cxx + cw_ / 2, cyy - ch_ / 2 + 4],
-                        fill=(56, 62, 64))
-    # name plates: small white slabs along the table edge, all facing nobody
+               fill=(int(226 - 16 * t), int(228 - 16 * t), int(222 - 14 * t)))
+    d.rectangle([x0, y0 + h * 0.12, x1, y0 + h * 0.20], fill=(206, 210, 202))
+    for bx in range(int(x0) + 6, int(x1), 22):
+        d.line([(bx, y0 + h * 0.12), (bx, y0 + h * 0.20)], fill=(232, 234, 228), width=2)
+    # a row of pale national flags on their stands along the back, all hanging limp
+    fx = x0 + w * 0.06
+    while fx < x1 - w * 0.06:
+        d.line([(fx, y0 + h * 0.22), (fx, y0 + h * 0.34)], fill=(120, 122, 116), width=2)
+        d.polygon([(fx, y0 + h * 0.22), (fx + w * 0.045, y0 + h * 0.225),
+                   (fx + w * 0.042, y0 + h * 0.30), (fx, y0 + h * 0.31)],
+                  fill=(214, 214, 208))
+        fx += w * 0.075
+
+    # the table: a wide horseshoe, pale wood, in perspective
+    tbl = y0 + h * 0.44
+    d.polygon([(x0 + w * 0.03, tbl), (x1 - w * 0.03, tbl),
+               (x1 - w * 0.10, y1 - h * 0.05), (x0 + w * 0.10, y1 - h * 0.05)],
+              fill=(196, 188, 172))
+    d.polygon([(x0 + w * 0.03, tbl), (x1 - w * 0.03, tbl),
+               (x1 - w * 0.035, tbl + h * 0.06), (x0 + w * 0.035, tbl + h * 0.06)],
+              fill=(214, 206, 190))
+    # empty chairs, dark against the light hall, so the absence is the darkest thing here
+    for k in range(5):
+        t = (k + 0.5) / 5
+        cxx = x0 + w * 0.12 + (w * 0.76) * t
+        cyy = tbl - h * 0.07
+        d.rectangle([cxx - w * 0.030, cyy - h * 0.09, cxx + w * 0.030, cyy + h * 0.07],
+                    fill=(46, 48, 46))
+        d.rectangle([cxx - w * 0.030, cyy - h * 0.09, cxx + w * 0.030, cyy - h * 0.075],
+                    fill=(30, 32, 30))
+    # name plates, all still set, all facing empty seats
     for k in range(7):
-        px = x0 + w * 0.18 + (w * 0.64) * k / 6
-        py = tbl + h * 0.055
-        d.rectangle([px - w * 0.032, py, px + w * 0.032, py + h * 0.035], fill=(238, 234, 222))
-        d.rectangle([px - w * 0.026, py + h * 0.010, px + w * 0.026, py + h * 0.017],
-                    fill=(120, 116, 104))
-    # microphones, switched off, pointing at empty seats
-    for k in (1, 3, 5):
-        px = x0 + w * 0.18 + (w * 0.64) * k / 6
-        py = tbl + h * 0.012
-        d.line([(px, py), (px, py - h * 0.10)], fill=(64, 70, 70), width=3)
-        d.ellipse([px - 4, py - h * 0.115, px + 4, py - h * 0.09], fill=(96, 102, 100))
-    # the red verdict, laid flat across the empty table, reading at any size
-    d.rectangle([x0 + w * 0.20, tbl + h * 0.16, x1 - w * 0.20, tbl + h * 0.34],
-                outline=(196, 38, 28), width=4)
-    s_ = fit(d, "NO DEAL", SANS_B, int(h * 0.15), w * 0.56)
-    ink(d, ((x0 + x1) / 2, tbl + h * 0.25), "NO DEAL", SANS_B, s_, (196, 38, 28), "mm")
-    # the torn draft, half off the table edge at the left
-    d.polygon([(x0 + w * 0.06, y1 - h * 0.20), (x0 + w * 0.18, y1 - h * 0.26),
-               (x0 + w * 0.20, y1 - h * 0.10), (x0 + w * 0.08, y1 - h * 0.06)],
-              fill=(240, 236, 224))
+        px = x0 + w * 0.16 + (w * 0.68) * k / 6
+        py = tbl + h * 0.075
+        d.rectangle([px - w * 0.033, py, px + w * 0.033, py + h * 0.036], fill=(252, 250, 244))
+        d.rectangle([px - w * 0.027, py + h * 0.011, px + w * 0.027, py + h * 0.018],
+                    fill=(150, 148, 138))
+    # microphones, switched off
+    for k in (1, 1 + 2, 1 + 4):
+        px = x0 + w * 0.16 + (w * 0.68) * k / 6
+        py = tbl + h * 0.03
+        d.line([(px, py), (px, py - h * 0.09)], fill=(80, 82, 78), width=3)
+        d.ellipse([px - 4, py - h * 0.105, px + 4, py - h * 0.08], fill=(60, 62, 58))
+    # the red verdict, the only saturated mark on a grey page
+    d.rectangle([x0 + w * 0.21, tbl + h * 0.19, x1 - w * 0.21, tbl + h * 0.36],
+                outline=(190, 36, 28), width=5)
+    s_ = fit(d, "NO DEAL", SANS_B, int(h * 0.14), w * 0.54)
+    ink(d, ((x0 + x1) / 2, tbl + h * 0.275), "NO DEAL", SANS_B, s_, (190, 36, 28), "mm")
+    # the torn draft, dropped on the floor at the left
+    d.polygon([(x0 + w * 0.05, y1 - h * 0.22), (x0 + w * 0.17, y1 - h * 0.27),
+               (x0 + w * 0.19, y1 - h * 0.11), (x0 + w * 0.07, y1 - h * 0.07)],
+              fill=(250, 248, 242))
     for k in range(3):
-        d.line([(x0 + w * 0.09, y1 - h * 0.19 + k * h * 0.03),
-                (x0 + w * 0.17, y1 - h * 0.22 + k * h * 0.03)],
-               fill=(150, 146, 132), width=2)
-
-
-def scene_drones(d, box):
-    """A night of drones over a burning block: the Kyiv region."""
-    x0, y0, x1, y1 = box
-    h = y1 - y0
-    d.rectangle(box, fill=(10, 14, 24))
-    # two searchlight cones from the ground
-    for sx in (x0 + 70, x0 + 200):
-        d.polygon([(sx, y1), (sx - 62, y0 + 10), (sx + 62, y0 + 10)], fill=(38, 48, 68))
-    # the block, lit from inside, with one bay torn out
-    bx0, bx1 = x0 + 12, x1 - 12
-    top_y = y0 + h * 0.34
-    d.rectangle([bx0, top_y, bx1, y1], fill=(9, 8, 10))
-    for wx in range(int(bx0) + 8, int(bx1) - 14, 24):
-        for wy in range(int(top_y) + 10, int(y1) - 14, 23):
-            d.rectangle([wx, wy, wx + 12, wy + 12], fill=(222, 146, 50))
-    torn0 = bx0 + (bx1 - bx0) * 0.42
-    torn1 = torn0 + (bx1 - bx0) * 0.30
-    d.polygon([(torn0, top_y), (torn1, top_y), (torn1 - 10, y1), (torn0 + 12, y1)],
-              fill=(4, 4, 6))
-    d.polygon([(torn0, top_y), ((torn0 + torn1) / 2 - 8, top_y - h * 0.20),
-               (torn1, top_y + 2)], fill=(206, 64, 30))
-    d.polygon([(torn0 + 12, top_y), ((torn0 + torn1) / 2, top_y - h * 0.12),
-               (torn1 - 12, top_y)], fill=(246, 186, 70))
-    # the swarm: five machines, big enough to read at 300 px
-    for dx, dy in ((x1 - 78, y0 + 30), (x1 - 34, y0 + 16), (x1 - 122, y0 + 54),
-                   (x1 - 30, y0 + 62), (x1 - 86, y0 + 78)):
-        dx, dy = int(dx), int(dy)
-        d.line([(dx - 16, dy), (dx + 16, dy)], fill=(240, 240, 246), width=4)
-        d.line([(dx, dy - 12), (dx, dy + 12)], fill=(184, 186, 196), width=3)
-        d.ellipse([dx - 6, dy - 6, dx + 6, dy + 6], fill=(252, 252, 255))
-
-
-def scene_bahrain(d, box):
-    """A struck tank farm at dusk: flame off one tank, smoke, a drone above."""
-    x0, y0, x1, y1 = box
-    h = y1 - y0
-    for i in range(int(h)):
-        t = i / max(1, h)
-        d.line([(x0, y0 + i), (x1, y0 + i)],
-               fill=(int(88 + 78 * t), int(42 + 46 * t), int(34 + 28 * t)))
-    d.rectangle([x0, y1 - 18, x1, y1], fill=(28, 19, 17))
-    tanks = ((x0 + 10, 42, 46), (x0 + 62, 56, 62), (x0 + 128, 40, 44), (x0 + 176, 38, 38))
-    for tx, tw, th in tanks:
-        d.rounded_rectangle([tx, y1 - 18 - th, tx + tw, y1 - 18], radius=9,
-                            fill=(50, 37, 33))
-        d.line([(tx + 4, y1 - 18 - th + 12), (tx + tw - 4, y1 - 18 - th + 12)],
-               fill=(88, 66, 58), width=2)
-    mid_top = y1 - 18 - 62
-    cx = x0 + 90
-    d.polygon([(cx - 30, mid_top + 4), (cx - 11, mid_top - 58), (cx + 3, mid_top - 16),
-               (cx + 22, mid_top - 76), (cx + 36, mid_top + 2)], fill=(218, 76, 28))
-    d.polygon([(cx - 14, mid_top + 2), (cx + 2, mid_top - 38), (cx + 17, mid_top)],
-              fill=(252, 200, 80))
-    for i, sy in enumerate(range(int(y0) + 2, int(mid_top) - 26, 14)):
-        d.ellipse([cx + 6 + i * 5, sy, cx + 62 + i * 5, sy + 24], fill=(66, 48, 45))
-    dx, dy = x1 - 40, y0 + 28
-    d.line([(dx - 16, dy), (dx + 16, dy)], fill=(252, 244, 240), width=3)
-    d.line([(dx, dy - 10), (dx, dy + 10)], fill=(228, 212, 206), width=3)
-    d.ellipse([dx - 5, dy - 5, dx + 5, dy + 5], fill=(255, 250, 246))
+        d.line([(x0 + w * 0.08, y1 - h * 0.20 + k * h * 0.035),
+                (x0 + w * 0.16, y1 - h * 0.23 + k * h * 0.035)],
+               fill=(160, 158, 146), width=2)
 
 
 def scene_ships(d, box):
@@ -470,7 +423,7 @@ def main():
         SANS_B, 10, GREY)
     ink(d, (W - M, fy + 8), "CLAIMS AS CLAIMS  \u00b7  TOLLS AS REPORTED", SANS_B, 9, GREY, "ra")
 
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry2", "entry.png")
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry3", "entry.png")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.save(out, optimize=True)
     print("wrote", out, img.size, os.path.getsize(out), "bytes")

@@ -25,8 +25,10 @@ fewer words and bigger marks than a real front page — the date at 74 px, the
 figures at 40 px, headlines at 24 px, and every brief with its place name and
 headline bold and its detail in one line of grey.
 
-Each lead is drawn to carry its story without the caption: an empty horseshoe
-table with the name plates still set and NO DEAL stamped across it; a corvette
+Each lead is drawn to carry its story without the caption, and each in its own
+light so the row is not three dark rectangles: an empty summit hall in flat
+daylight — the horseshoe table set, the name plates still out, the draft dropped
+on the floor and NO DEAL stamped across the table; a corvette
 listing hard beside a cargo ship burning at her berth, with the sea drone that
 did it in the foreground; and a factory with its sawtooth roof torn open, crews
 with a hose on the left and a covered stretcher on the right, so the dead are
@@ -55,7 +57,7 @@ grounds more than 1,000 flights before Thanksgiving.
 ```
 build.py     the composer: Pillow, stdlib only, no clock, no randomness
 main.py      validates and copies entry.png to /output (Python 3.13 stdlib)
-entry.png    the rendered page (141,154 bytes)
+entry.png    the rendered page (140,975 bytes)
 ```
 
 ## Run it
